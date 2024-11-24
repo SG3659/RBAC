@@ -1,0 +1,16 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+
+server/node_modules/
+frontend/node_modules/
+
+server/.env
+frontend/.env
+.DS_Store
+
+.vscode/*
+
+app.log
