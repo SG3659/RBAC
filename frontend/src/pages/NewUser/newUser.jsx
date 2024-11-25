@@ -1,119 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosConfig from "../../config/axiosConfig";
 import Layout from "../../components/Layout/layout";
-import toast from "react-hot-toast";
-const AddUserForm = () => {
+import { userTh } from "../../constants/index";
+import { PlusIcon, TrashIcon, EditIcon } from "lucide-react";
+
+const newUser = () => {
   const token = localStorage.getItem("token");
-  // useEffect(() => {
-  //   if (!token) {
-  //     toast.error("Please Login or Register");
-  //   }
-  // }, [token]);
+  const [fetchuser, setFetchUser] = useState("");
 
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    role: "Super Admin",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const getUser = async () => {
     try {
-      const response = await axiosConfig.post("/api/v1/user", formData, {
+      const response = await axiosConfig.get("/api/v1/userGets", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("User added successfully!");
-      // console.log(response.data);
+      if (response.status === 200) {
+        console.log(response.data.data);
+        setFetchUser(response.data.data);
+      }
     } catch (error) {
       console.error("Error adding user:", error);
-      toast.error("Failed to add user.");
     }
   };
-
+  useEffect(() => {
+    getUser();
+  });
   return (
     <Layout>
-      <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-md">
-        <h2 className="text-xl font-bold mb-4">Add New User</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="username"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1" htmlFor="role">
-              Role
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-            >
-              <option value="Super Admin">Super Admin</option>
-              <option value="Admin">Admin</option>
-              <option value="User">User</option>
-            </select>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="px-4 py-2 bg-gray-200 rounded-md mr-2"
-              onClick={() =>
-                setFormData({ username: "", email: "", role: "Super Admin" })
-              }
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md"
-            >
-              Save
-            </button>
-          </div>
-        </form>
+      <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h3 className="text-lg leading-6 font-medium text-gray-900">
+          User Management
+        </h3>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
+          <PlusIcon className="mr-2" /> Add User
+        </button>
       </div>
+
+      <table className="min-w-full divide-y divide-gray-200 mt-4">
+        <thead className="bg-gray-50">
+          <tr>
+            {userTh.map((head) => (
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                key={head.id}
+              >
+                {head.title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {/* <tbody className="bg-white divide-y divide-gray-200">
+          {fetchuser.map((user) => (
+            <tr key={user.id}>
+              <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    user.status === "Active"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {user.status}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+                <button className="text-blue-600 hover:text-blue-900">
+                  <EditIcon size={16} />
+                </button>
+                <button className="text-red-600 hover:text-red-900">
+                  <TrashIcon size={16} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody> */}
+      </table>
     </Layout>
   );
 };
 
-export default AddUserForm;
+export default newUser;
