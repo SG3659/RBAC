@@ -2,7 +2,9 @@ import { useState } from "react";
 import axiosConfig from "../../config/axiosConfig";
 import Layout from "../../components/Layout/layout";
 import toast from "react-hot-toast";
-const addUser = () => {
+const addUser = (props) => {
+  let toggle = props.toggle;
+  let setToggle = props.setToggle;
   const token = localStorage.getItem("token");
   // useEffect(() => {
   //   if (!token) {
@@ -39,7 +41,7 @@ const addUser = () => {
   };
 
   return (
-    <Layout>
+    <div>
       <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-md">
         <h2 className="text-xl font-bold mb-4">Add New User</h2>
         <form onSubmit={handleSubmit}>
@@ -97,9 +99,10 @@ const addUser = () => {
             <button
               type="button"
               className="px-4 py-2 bg-gray-200 rounded-md mr-2"
-              onClick={() =>
-                setFormData({ username: "", email: "", role: "Super Admin" })
-              }
+              onClick={() => {
+                setFormData({ username: "", email: "", role: "Super Admin" }),
+                  setToggle(!toggle);
+              }}
             >
               Cancel
             </button>
@@ -112,7 +115,7 @@ const addUser = () => {
           </div>
         </form>
       </div>
-    </Layout>
+    </div>
   );
 };
 

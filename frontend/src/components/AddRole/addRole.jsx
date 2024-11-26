@@ -1,8 +1,10 @@
 import { useState } from "react";
-import Layout from "../../components/Layout/layout";
+
 import toast from "react-hot-toast";
 import axiosConfig from "../../config/axiosConfig";
-const addRole = () => {
+const addRole = (props) => {
+  let toggle = props.toggle;
+  let setToggle = props.setToggle;
   const token = localStorage.getItem("token");
   // useEffect(()=>{
   //   if(!token){
@@ -49,7 +51,7 @@ const addRole = () => {
   };
 
   return (
-    <Layout>
+    <div>
       <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md border border-gray-200">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Role</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,16 +103,19 @@ const addRole = () => {
             <button
               type="button"
               onClick={() =>
-                setFormData({
-                  roleName: "",
-                  permissions: {
-                    read: false,
-                    write: false,
-                    delete: false,
-                    manage_users: false,
-                    manage_roles: false,
+                setFormData(
+                  {
+                    roleName: "",
+                    permissions: {
+                      read: false,
+                      write: false,
+                      delete: false,
+                      manage_users: false,
+                      manage_roles: false,
+                    },
                   },
-                })
+                  setToggle(!toggle)
+                )
               }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300"
             >
@@ -125,7 +130,7 @@ const addRole = () => {
           </div>
         </form>
       </div>
-    </Layout>
+    </div>
   );
 };
 

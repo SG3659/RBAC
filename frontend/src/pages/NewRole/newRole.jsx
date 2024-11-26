@@ -3,10 +3,19 @@ import axiosConfig from "../../config/axiosConfig";
 import Layout from "../../components/Layout/layout";
 import { roleTh } from "../../constants/index";
 import { PlusIcon, TrashIcon, EditIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import AddRole from "../../components/AddRole/addRole";
 
 const newUser = () => {
+  const navigate = useNavigate();
+  const [toggle, setToggle] = useState(false);
   const token = localStorage.getItem("token");
-  const [fetchrole, setFetchRole] = useState("");
+  if (!token) {
+    toast.error("Please Login");
+    navigate("/login");
+  }
+  const [fetchRole, setFetchRole] = useState("");
 
   const getUser = async () => {
     try {
@@ -16,8 +25,18 @@ const newUser = () => {
         },
       });
       if (response.status === 200) {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setFetchRole(response.data.data);
+        toast.success("Role Fetch");
+      } else if (response.status === 400) {
+        toast.error(response.data.message || "Something went wrong");
+        return { status: 400, message: response.data.message || "Bad Request" };
+      } else {
+        toast.error(response.data.message || "Something went wrong");
+        return {
+          status: response.status,
+          message: response.data.message || "Unknown Error",
+        };
       }
     } catch (error) {
       console.error("Error adding user:", error);
@@ -28,15 +47,24 @@ const newUser = () => {
   });
   return (
     <Layout>
-      <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+      <div className="relative px-4 py-5 sm:px-6 flex justify-between items-center">
         <h3 className="text-lg leading-6 font-medium text-gray-900">
           Role Management
         </h3>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
+        <button
+          onClick={() => setToggle(!toggle)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center"
+        >
           <PlusIcon className="mr-2" /> Add Role
         </button>
       </div>
-
+      <div
+        className={`${
+          !toggle ? "hidden" : "flex"
+        }  absolute inset-0 items-center justify-center `}
+      >
+        <AddRole toggle={toggle} setToggle={setToggle} />
+      </div>
       <table className="min-w-full divide-y divide-gray-200 mt-4">
         <thead className="bg-gray-50">
           <tr>
@@ -51,7 +79,7 @@ const newUser = () => {
           </tr>
         </thead>
         {/* <tbody className="bg-white divide-y divide-gray-200">
-          {fetchuser.map((user) => (
+          {fetchRole.map((user) => (
             <tr key={user.id}>
               <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
